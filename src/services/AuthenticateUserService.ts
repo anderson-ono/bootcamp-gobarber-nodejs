@@ -3,6 +3,8 @@ import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import User from '../models/User';
 
+import AppError from '../errors/AppError';
+
 import authConfig from '../config/auth';
 
 interface Request {
@@ -24,13 +26,13 @@ class CreateUserService {
     });
 
     if (!user) {
-      throw Error('Incorrect e-mail/password combination');
+      throw new AppError('Incorrect e-mail/password combination', 401);
     }
 
     const passwordMatched = await compare(password, user.password);
 
     if (!passwordMatched) {
-      throw Error('Incorrect e-mail/password combination');
+      throw new AppError('Incorrect e-mail/password combination', 401);
     }
 
     const { secret, expiresIn } = authConfig.jwt;
